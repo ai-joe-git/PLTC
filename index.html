@@ -279,118 +279,6 @@
   </audio>
 
   <script>
-    // List of images (use absolute URLs or relative paths)
-    const images = [
-      'pltc-meme-1.jpg',
-      'pltc-meme-2.jpg',
-      'pltc-meme-3.jpg',
-      'pltc-meme-4.jpg',
-      'pltc-meme-5.jpg',
-      'pltc-meme-6.jpg',
-      'pltc-meme-7.jpg',
-      'pltc-meme-8.jpg',
-      'pltc-meme-9.jpg',
-      'pltc-meme-10.jpg',
-    ];
-
-    // Infinite Scrolling Gallery Script
-    const gallery = document.getElementById('gallery');
-    let index = 0;
-
-    function loadImages() {
-      for (let i = 0; i < 6; i++) {
-        if (index >= images.length) return;
-
-        const imageContainer = document.createElement('div');
-        imageContainer.classList.add('image-container');
-
-        const img = document.createElement('img');
-        img.src = images[index];
-        img.alt = `PLTC Meme ${index + 1}`;
-
-        const buttonContainer = document.createElement('div');
-        buttonContainer.classList.add('button-container');
-
-        const shareButton = document.createElement('button');
-        shareButton.textContent = 'Share';
-        shareButton.dataset.imageUrl = images[index];
-
-        const downloadButton = document.createElement('button');
-        downloadButton.textContent = 'Download';
-        downloadButton.dataset.imageUrl = images[index];
-
-        const viewButton = document.createElement('button');
-        viewButton.textContent = 'View';
-        viewButton.dataset.imageUrl = images[index];
-
-        buttonContainer.appendChild(shareButton);
-        buttonContainer.appendChild(downloadButton);
-        buttonContainer.appendChild(viewButton);
-        imageContainer.appendChild(img);
-        imageContainer.appendChild(buttonContainer);
-        gallery.appendChild(imageContainer);
-
-        index++;
-      }
-
-      // Trigger fade-in animation for newly loaded images
-      setTimeout(() => {
-        const containers = document.querySelectorAll('#gallery .image-container');
-        containers.forEach(container => {
-          if (container.getBoundingClientRect().top < window.innerHeight) {
-            container.classList.add('visible');
-          }
-        });
-      }, 100);
-    }
-
-    // Event delegation for buttons
-    gallery.addEventListener('click', (event) => {
-      if (event.target.tagName === 'BUTTON') {
-        const imageUrl = event.target.dataset.imageUrl;
-        if (event.target.textContent === 'Share') {
-          shareImage(imageUrl);
-        } else if (event.target.textContent === 'Download') {
-          downloadImage(imageUrl);
-        } else if (event.target.textContent === 'View') {
-          viewImage(imageUrl);
-        }
-      }
-    });
-
-    // Share Website Link Function
-    function shareImage(imageUrl) {
-      const message = `PLTC: Pepe's Left Toenail Clipping - "The groundbreaking crypto innovation the world didn’t ask for, but desperately needs. 🐸✂️"`;
-      const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(window.location.href)}`;
-      window.open(shareUrl, '_blank');
-    }
-
-    // Download Image Function
-    function downloadImage(imageUrl) {
-      const link = document.createElement('a');
-      link.href = imageUrl;
-      link.download = `pltc-meme-${Date.now()}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    // View Image Function
-    function viewImage(imageUrl) {
-      const img = document.createElement('img');
-      img.src = imageUrl;
-      img.style.maxWidth = '100%';
-      img.style.maxHeight = '100vh';
-      img.style.position = 'fixed';
-      img.style.top = '50%';
-      img.style.left = '50%';
-      img.style.transform = 'translate(-50%, -50%)';
-      img.style.zIndex = '1000';
-      img.style.cursor = 'pointer';
-      img.onclick = () => document.body.removeChild(img);
-      document.body.appendChild(img);
-    }
-
     // Music Toggle Functionality
     const musicToggle = document.getElementById('music-toggle');
     const backgroundMusic = document.getElementById('background-music');
@@ -401,30 +289,24 @@
         backgroundMusic.pause();
         musicToggle.innerHTML = '<i class="fas fa-music"></i>';
       } else {
-        backgroundMusic.play();
-        musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
+        // Ensure the audio is played only after user interaction
+        backgroundMusic.play().then(() => {
+          musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
+        }).catch((error) => {
+          console.error('Audio playback failed:', error);
+          alert('Click anywhere on the page to enable audio playback.');
+        });
       }
       isPlaying = !isPlaying;
     });
 
-    // Load initial set of images
-    loadImages();
-
-    // Infinite Scroll Event Listener
-    window.addEventListener('scroll', () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
-        loadImages();
-      }
+    // Debugging logs
+    backgroundMusic.addEventListener('canplay', () => {
+      console.log('Audio is ready to play.');
     });
 
-    // Fade-in images on scroll
-    window.addEventListener('scroll', () => {
-      const containers = document.querySelectorAll('#gallery .image-container');
-      containers.forEach(container => {
-        if (container.getBoundingClientRect().top < window.innerHeight) {
-          container.classList.add('visible');
-        }
-      });
+    backgroundMusic.addEventListener('error', (e) => {
+      console.error('Audio error:', e);
     });
   </script>
 </body>
